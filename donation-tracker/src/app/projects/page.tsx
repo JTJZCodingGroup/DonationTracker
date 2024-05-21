@@ -1,9 +1,22 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState } from "react";
+import ReactModal from 'react-modal';
+import NewProjectForm from "./NewProjectForm";
+
+export default function Projects() {
+  const [isAddProject, setIsAddProject]: [boolean, Function] = useState(false);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1>Projects Page</h1>
+    <main>
+      <h1>Project Page</h1>
+      <button onClick={() => setIsAddProject(true)}>click here</button>
+      <ReactModal
+        isOpen={isAddProject}
+        ariaHideApp={false}
+      >
+        <NewProjectForm setIsAddProject={setIsAddProject}/>
+      </ReactModal>
     </main>
   );
 }
