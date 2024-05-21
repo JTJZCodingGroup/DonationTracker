@@ -17,8 +17,8 @@ model Projects {
   id         String @id @default(uuid())
   created_at DateTime @default(now())
   name       String @unique
-  goal       BigInt 
-  progress   BigInt 
+  goal       Int
+  progress   Int
   end_date   DateTime
   donations  Donations[] 
 }
@@ -27,9 +27,6 @@ model Donations {
   id         String @id @default(uuid())
   project_id String
   donated_at DateTime @default(now())
-  amount     BigInt
+  amount     Int
   project    Projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
 }
-
-// donations Donations[]
-//   project    Projects @relation(fields: [project_id], references: [id])

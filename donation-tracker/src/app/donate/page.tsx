@@ -1,9 +1,24 @@
-import Image from "next/image";
+import { useState } from "react";
+import NewDonationForm from "./NewDonationForm";
 
-export default function Home() {
+const getProjects = async () => {
+  const res = await fetch('http://localhost:3000/api/projects');
+  const projects: any[] = await res.json();
+
+  return projects.map(project => ({
+    value: project.id,
+    label: project.name
+  }))
+}
+
+export default async function Donation() {
+
+  const projectList = await getProjects();
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1>Donations Page</h1>
+    <main>
+      <h1>Create Donation Page</h1>
+      <NewDonationForm projectList={projectList}/>
     </main>
   );
 }
