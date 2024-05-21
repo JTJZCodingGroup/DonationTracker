@@ -20,4 +20,16 @@ model Projects {
   goal       BigInt 
   progress   BigInt 
   end_date   DateTime
+  donations  Donations[] 
 }
+
+model Donations {
+  id         String @id @default(uuid())
+  project_id String
+  donated_at DateTime @default(now())
+  amount     BigInt
+  project    Projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
+}
+
+// donations Donations[]
+//   project    Projects @relation(fields: [project_id], references: [id])
