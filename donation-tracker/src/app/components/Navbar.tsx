@@ -1,7 +1,7 @@
 // create links for login, proejcts, donate, create project
 "use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
 const Navbar: React.FC = () => {
   return (
@@ -21,12 +21,17 @@ const Navbar: React.FC = () => {
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16m-7 6h7"
+              ></path>
             </svg>
           </button>
         </div>
 
-        <div className="lg:flex flex-col lg:flex-row lg:space-x-4 lg:mt-0 mt-4 flex flex-col items-center text-xl">
+        <div className="lg:flex flex-col lg:flex-row lg:space-x-4 lg:mt-0 mt-4 flex items-center text-xl">
           <Link href="/projects">
             <button className="text-white font-mono px-4 py-2 hover:text-orange-600 focus:outline-none">Projects</button>
           </Link>
@@ -43,8 +48,3 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
-
-
-
-
-

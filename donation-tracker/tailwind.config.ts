@@ -15,8 +15,8 @@ const config: Config = {
       },
       keyframes: {
         wiggle: {
-          '0%, 100%': { transform: 'rotate(-3deg)' },
-          '50%': { transform: 'rotate(3deg)' },
+          "0%, 100%": { transform: "rotate(-3deg)" },
+          "50%": { transform: "rotate(3deg)" },
         },
         growShrink: {
           '0%, 100%': { transform: 'scale(1)' },

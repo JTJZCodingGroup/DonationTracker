@@ -1,38 +1,36 @@
-"use client"
+"use client";
 
 import { useState, useEffect, useRef } from "react";
-import '../globals.css'; // Importing the global styles
+import "../globals.css"; // Importing the global styles
 
 interface NewProjectFormProps {
   setIsAddProject: Function;
 }
 
 interface NewProjectType {
-  name: string,
-  goal: number,
-  end_date: string,
-  progress: number,
+  name: string;
+  goal: number;
+  end_date: string;
+  progress: number;
 }
 
 const NewProjectForm: React.FC<NewProjectFormProps> = ({ setIsAddProject }) => {
-  const [name, setName] = useState<string>('');
+  const [name, setName] = useState<string>("");
   const [goal, setGoal] = useState<number>(0);
-  const [date, setDate] = useState<string>('');
+  const [date, setDate] = useState<string>("");
   const modalRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
     // create request body
     const body: NewProjectType = {
       name,
       goal,
-      end_date: date + ':00.000Z',
+      end_date: date + ":00.000Z",
       progress: 0,
     };
 
-    const response = await fetch('/api/projects', {
-      method: 'POST',
+    const response = await fetch("/api/projects", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -41,13 +39,14 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({ setIsAddProject }) => {
 
     // catch error
     if (!response.ok) {
-      console.error('Network response was not ok', response.statusText);
+      console.error("Network response was not ok", response.statusText);
       return;
     }
 
     const projectData = await response.json();
 
-    console.log(projectData);
+    // revalidate project page path
+    await fetch(`/api/revalidate?path=/donate`);
 
     // close modal
     setIsAddProject(false);
@@ -56,7 +55,10 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({ setIsAddProject }) => {
   // Close the modal if clicking outside of it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
         setIsAddProject(false);
       }
     };
@@ -72,7 +74,10 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({ setIsAddProject }) => {
         <h3 className="text-2xl font-bold mb-4">Add New Project</h3>
         <form onSubmit={handleSubmit} className="space-y-2">
           <div>
-            <label htmlFor="projectName" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="projectName"
+              className="block text-sm font-medium text-gray-700"
+            >
               Project Name
             </label>
             <input
@@ -85,7 +90,10 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({ setIsAddProject }) => {
             />
           </div>
           <div>
-            <label htmlFor="fundingGoal" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="fundingGoal"
+              className="block text-sm font-medium text-gray-700"
+            >
               Funding Goal
             </label>
             <input
@@ -93,14 +101,18 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({ setIsAddProject }) => {
               type="text"
               value={goal}
               onChange={(e) => {
-                if (!isNaN(Number(e.target.value))) setGoal(Number(e.target.value));
+                if (!isNaN(Number(e.target.value)))
+                  setGoal(Number(e.target.value));
               }}
               className="input-field"
               required
             />
           </div>
           <div>
-            <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="endDate"
+              className="block text-sm font-medium text-gray-700"
+            >
               End Date
             </label>
             <input
@@ -112,10 +124,7 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({ setIsAddProject }) => {
               required
             />
           </div>
-          <button
-            type="submit"
-            className="submit-button"
-          >
+          <button type="submit" className="submit-button">
             Submit
           </button>
         </form>
