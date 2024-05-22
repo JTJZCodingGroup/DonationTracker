@@ -17,27 +17,24 @@ type Project = {
 };
 
 const titles = [
-  "DONATION-LEVEL OVER 9000!!!",
+  "DONATION-LEVELS OVER 9000!",
   "Mega Super Awesome Project Support",
   "Skip Lunch, Donate NOW",
   "Master of Philanthropy",
-  "PIKA-PIKACHU, PIKA PII!",
   "Support and Achieve Eternal Honors",
-  "Donate as often as Taylor Swift takes Flights!",
   "Exquisite Project Patron Extraordinaire",
-  "Alms for the poor, Me'Lord?",
+  "Alms for us, Me'Lord?",
   "PHD in Philanthropy",
-  "YOU HAVE THE HIGH-GROUND, DONATE.",
   "Philanthropy Warlord",
-  "Next Stop: Donation Station",
+  "Welcome to the Donation Station",
   "Glorius Supreme Leader of Charity",
   "Archduke of Altruism",
-  "Benefaction Baron",
   "High Priest of Helping",
   "Dark Chancellor of Charity.. Do it",
   "Steal from your <Guild> Banks and Donate",
   "ALL YOUR ALMS ARE BELONG TO US",
   "Cancel your WoW subscription",
+  "Aggressively Giving since 2024"
 ];
 
 function shuffleArray(array: string[]) {
@@ -53,6 +50,7 @@ const Projects = () => {
     shuffleArray([...titles])
   );
   const [fadeState, setFadeState] = useState<string>("fadeInRight");
+  const [sortOption, setSortOption] = useState<string>("");
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -68,6 +66,8 @@ const Projects = () => {
 
     // Set the initial title
     setTitle(shuffledTitles[0]);
+
+  
 
     // Set an interval to change the title automatically
     const interval = setInterval(() => {
@@ -87,47 +87,79 @@ const Projects = () => {
     }, 1000); // Duration of fade-out animation
   };
 
+  const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortOption(event.target.value);
+    let sortedProjects = [...projects];
+    switch (event.target.value) {
+      case "percentageHighToLow":
+        sortedProjects.sort((a, b) => (b.progress / b.goal) - (a.progress / a.goal));
+        break;
+      case "percentageLowToHigh":
+        sortedProjects.sort((a, b) => (a.progress / a.goal) - (b.progress / b.goal));
+        break;
+      case "startDate":
+        sortedProjects.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        break;
+      case "endDate":
+        sortedProjects.sort((a, b) => new Date(a.end_date).getTime() - new Date(b.end_date).getTime());
+        break;
+      default:
+        break;
+    }
+    setProjects(sortedProjects);
+  };
+
   const projectList = projects.map((project) => (
     <Link href={`/projects/${project.id}`} key={project.id}>
-      <div key={project.id} className="project-card">
-        <h2 className="text-2xl font-semibold mb-2">{project.name}</h2>
+        <div key={project.id} className="project-card transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
+          <h2 className="text-2xl font-semibold mb-2">{project.name}</h2>
 
-        <p className="text-gray-600 mb-2">
-          Start Date: {new Date(project.created_at).toLocaleDateString()}
-        </p>
-        <p className="text-gray-600 mb-2">
-          End Date: {new Date(project.end_date).toLocaleDateString()}
-        </p>
-        <p className="text-gray-600 mb-2">Goal: ${project.goal}</p>
+          <p className="text-gray-600 mb-2">
+            Start Date: {new Date(project.created_at).toLocaleDateString()}
+          </p>
+          <p className="text-gray-600 mb-2">
+            End Date: {new Date(project.end_date).toLocaleDateString()}
+          </p>
+          <p className="text-gray-600 mb-2">Goal: ${project.goal}</p>
 
-        <div className="w-full flex justify-center items-center mb-2">
-          <div className="progress-bar">
-            <div
-              className="progress-bar-inner"
-              style={{
-                width: `${(project.progress / project.goal) * 100}%`,
-              }}
-            ></div>
+          <div className="w-full flex justify-center items-center mb-2">
+            <div className="progress-bar">
+              <div
+                className="progress-bar-inner"
+                style={{
+                  width: `${(project.progress / project.goal) * 100}%`,
+                }}
+              ></div>
+            </div>
           </div>
+          <p className="text-gray-600">
+            Current Amount: {project.progress} (
+            {((project.progress / project.goal) * 100).toFixed(2)}%)
+          </p>
         </div>
-        <p className="text-gray-600">
-          Current Amount: {project.progress} (
-          {((project.progress / project.goal) * 100).toFixed(2)}%)
-        </p>
-      </div>
     </Link>
   ));
 
   return (
     <main className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
       <h1
-        className={`text-4xl font-bold mb-8 transition transform cursor-pointer`}
+        className={`title text-4xl font-bold mb-8 transition transform cursor-pointer`}
       >
         {title}
       </h1>
       <button className="button" onClick={() => setIsAddProject(true)}>
         Add Project
       </button>
+      <select
+        className="mb-4 p-2 border border-gray-300 rounded"
+        value={sortOption}
+        onChange={handleSortChange}
+      >
+        <option value="percentageHighToLow">Percentage (High to Low)</option>
+        <option value="percentageLowToHigh">Percentage (Low to High)</option>
+        <option value="startDate">Start Date</option>
+        <option value="endDate">End Date</option>
+      </select>
       <ReactModal
         isOpen={isAddProject}
         onRequestClose={() => setIsAddProject(false)}
