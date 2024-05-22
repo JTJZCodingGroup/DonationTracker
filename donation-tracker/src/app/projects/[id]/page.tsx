@@ -35,7 +35,7 @@ export async function generateStaticParams() {
 async function getProjectData(id: string) {
   const res = await fetch("http://localhost:3000/api/projects/" + id, {
     next: {
-      revalidate: 30,
+      revalidate: 60,
     },
   });
 
@@ -77,9 +77,14 @@ const Project: React.FC<ProjectPageType> = async ({ params }) => {
   const donations: DonationType[] = projectData.donations;
   const DonationList = donations.map((donation, idx) => {
     return (
-      <div key={idx}>
-        <p>{donation.amount}</p>
-        <p>{donation.donated_at}</p>
+      <div className="donationCard" key={idx}>
+        <p>
+          <strong>Amount: </strong>${donation.amount}
+        </p>
+        <p>
+          <strong>Date: </strong>
+          {donation.donated_at.slice(0, 10)}
+        </p>
       </div>
     );
   });
@@ -89,18 +94,24 @@ const Project: React.FC<ProjectPageType> = async ({ params }) => {
 
   return (
     <main>
-      <h1>Project: </h1>
-      <h1>{name}</h1>
-      <h1>Goal:</h1>
-      <h1>{goal}</h1>
-      <LineChart
-        start={created_at.slice(0, 10)}
-        end={end_date.slice(0, 10)}
-        goal={goal}
-        progress={progress}
-        chartData={chartData}
-      />
-      <h1>{name}</h1>
+      <div className="projectHeader">
+        <h1>{name}</h1>
+        <div className="projectHeader-goal">
+          <p>
+            <span>Goal: </span>
+            {goal}
+          </p>
+        </div>
+      </div>
+      <div className="projectChartBox">
+        <LineChart
+          start={created_at.slice(0, 10)}
+          end={end_date.slice(0, 10)}
+          goal={goal}
+          progress={progress}
+          chartData={chartData}
+        />
+      </div>
       {DonationList}
     </main>
   );

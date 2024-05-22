@@ -2,7 +2,6 @@
 
 import { useState, useId } from "react";
 import { useRouter } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import Select from "react-select";
 
 interface NewDonationFormProps {
@@ -52,14 +51,14 @@ const NewDonationForm: React.FC<NewDonationFormProps> = ({ projectList }) => {
 
     // revalidate project page path
     await fetch(`/api/revalidate?path=/projects/${projectId}`);
-
     router.push("/projects/");
+    router.refresh();
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <h3>Add New Project</h3>
-      <label htmlFor="Project Name">
+      <label>
         <span>Project Name: </span>
         <Select
           instanceId={selectId}
@@ -71,7 +70,7 @@ const NewDonationForm: React.FC<NewDonationFormProps> = ({ projectList }) => {
           }}
         />
       </label>
-      <label htmlFor="Amount">
+      <label>
         <span>Amount: </span>
         <input
           type="text"
