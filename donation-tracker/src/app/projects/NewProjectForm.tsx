@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import '../globals.css'; // Importing the global styles
 
 interface NewProjectFormProps {
   setIsAddProject: Function;
@@ -13,21 +14,22 @@ interface NewProjectType {
   progress: number,
 }
 
-const NewProjectForm: React.FC<NewProjectFormProps> = ({setIsAddProject}) =>  {
-  const [name, setName]: [string, Function] = useState('');
-  const [goal, setGoal]: [number, Function] = useState(0);
-  const [date, setDate]: [string, Function] = useState('');
+const NewProjectForm: React.FC<NewProjectFormProps> = ({ setIsAddProject }) => {
+  const [name, setName] = useState<string>('');
+  const [goal, setGoal] = useState<number>(0);
+  const [date, setDate] = useState<string>('');
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // create request body
-    const body:NewProjectType = {
+    const body: NewProjectType = {
       name,
       goal,
       end_date: date + ':00.000Z',
       progress: 0,
-    }
+    };
 
     const response = await fetch('/api/projects', {
       method: 'POST',
@@ -35,7 +37,7 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({setIsAddProject}) =>  {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
-    })
+    });
 
     // catch error
     if (!response.ok) {
@@ -49,41 +51,77 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({setIsAddProject}) =>  {
 
     // close modal
     setIsAddProject(false);
-  }
+  };
+
+  // Close the modal if clicking outside of it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setIsAddProject(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setIsAddProject]);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h3>Add New Project</h3>
-      <label htmlFor="Project Name">
-        <span>Project Name: </span>
-        <input 
-          type="text" 
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </label>
-      <label htmlFor="Funding Goal">
-        <span>Funding Goal: </span>
-        <input 
-          type="text" 
-          value={goal}
-          onChange={(e) => {
-            if (!isNaN(Number(e.target.value))) setGoal(Number(e.target.value))
-          }}
-        />
-      </label>
-      <label htmlFor="End Date">
-        <span>End Date: </span>
-        <input 
-          aria-label="Date and time" 
-          type="datetime-local" 
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
-      </label>
-      <button>Submit</button>
-    </form>
+    <div className="modal-background">
+      <div ref={modalRef} className="modal-container">
+        <h3 className="text-2xl font-bold mb-4">Add New Project</h3>
+        <form onSubmit={handleSubmit} className="space-y-2">
+          <div>
+            <label htmlFor="projectName" className="block text-sm font-medium text-gray-700">
+              Project Name
+            </label>
+            <input
+              id="projectName"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="input-field"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="fundingGoal" className="block text-sm font-medium text-gray-700">
+              Funding Goal
+            </label>
+            <input
+              id="fundingGoal"
+              type="text"
+              value={goal}
+              onChange={(e) => {
+                if (!isNaN(Number(e.target.value))) setGoal(Number(e.target.value));
+              }}
+              className="input-field"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">
+              End Date
+            </label>
+            <input
+              id="endDate"
+              type="datetime-local"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="input-field"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="submit-button"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
+    </div>
   );
-}
+};
 
 export default NewProjectForm;
