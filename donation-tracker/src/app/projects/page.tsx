@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import ReactModal from 'react-modal';
-import NewProjectForm from './NewProjectForm';
+import { useState, useEffect } from "react";
+import ReactModal from "react-modal";
+import NewProjectForm from "./NewProjectForm";
+import Link from "next/link";
+import "../globals.css"; // Importing the global styles
 import '../globals.css'; // Importing the global styles
 
 type Project = {
@@ -25,25 +27,25 @@ const titles = [
   'Donate as often as Taylor Swift takes Flights!',
   'Exquisite Project Patron Extraordinaire',
   "Alms for the poor, Me'Lord?",
-  'PHD in Philanthropy',
-  'YOU HAVE THE HIGH-GROUND, DONATE.',
-  'Philanthropy Warlord',
-  'Next Stop: Donation Station',
-  'Glorius Supreme Leader of Charity',
-  'Archduke of Altruism',
-  'Benefaction Baron',
-  'High Priest of Helping',
-  'Dark Chancellor of Charity.. Do it',
-  'Steal from your <Guild> Banks and Donate',
-  'ALL YOUR ALMS ARE BELONG TO US',
-  'Cancel your WoW subscription',
+  "PHD in Philanthropy",
+  "YOU HAVE THE HIGH-GROUND, DONATE.",
+  "Philanthropy Warlord",
+  "Next Stop: Donation Station",
+  "Glorius Supreme Leader of Charity",
+  "Archduke of Altruism",
+  "Benefaction Baron",
+  "High Priest of Helping",
+  "Dark Chancellor of Charity.. Do it",
+  "Steal from your <Guild> Banks and Donate",
+  "ALL YOUR ALMS ARE BELONG TO US",
+  "Cancel your WoW subscription",
 ];
 
 function shuffleArray(array: string[]) {
   return array.sort(() => Math.random() - 0.5);
 }
 
-export default function Projects() {
+const Projects = () => {
   const [isAddProject, setIsAddProject] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [title, setTitle] = useState<string>('');
@@ -56,11 +58,11 @@ export default function Projects() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch('/api/projects');
+        const response = await fetch("/api/projects");
         const data = await response.json();
         setProjects(data);
       } catch (error) {
-        console.error('Failed to fetch projects', error);
+        console.error("Failed to fetch projects", error);
       }
     };
     fetchProjects();
@@ -77,24 +79,54 @@ export default function Projects() {
   }, [shuffledTitles]);
 
   const handleChangeTitle = () => {
-    setFadeState('fadeOutLeft');
+    setFadeState("fadeOutLeft");
     setTimeout(() => {
       const nextIndex = (currentIndex + 1) % shuffledTitles.length;
       setCurrentIndex(nextIndex);
       setTitle(shuffledTitles[nextIndex]);
-      setFadeState('fadeInRight');
+      setFadeState("fadeInRight");
     }, 1000); // Duration of fade-out animation
   };
 
+  const projectList = projects.map((project) => (
+    <Link href={`/projects/${project.id}`} key={project.id}>
+      <div key={project.id} className="project-card">
+        <h2 className="text-2xl font-semibold mb-2">{project.name}</h2>
+
+        <p className="text-gray-600 mb-2">
+          Start Date: {new Date(project.created_at).toLocaleDateString()}
+        </p>
+        <p className="text-gray-600 mb-2">
+          End Date: {new Date(project.end_date).toLocaleDateString()}
+        </p>
+        <p className="text-gray-600 mb-2">Goal: ${project.goal}</p>
+
+        <div className="w-full flex justify-center items-center mb-2">
+          <div className="progress-bar">
+            <div
+              className="progress-bar-inner"
+              style={{
+                width: `${(project.progress / project.goal) * 100}%`,
+              }}
+            ></div>
+          </div>
+        </div>
+        <p className="text-gray-600">
+          Current Amount: {project.progress} (
+          {((project.progress / project.goal) * 100).toFixed(2)}%)
+        </p>
+      </div>
+    </Link>
+  ));
+
   return (
-    <main className='min-h-screen bg-gray-100 flex flex-col items-center p-4'>
+    <main className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
       <h1
-        className={`text-4xl font-bold mb-8 transition transform ${fadeState} cursor-pointer`}
-        onClick={handleChangeTitle}
+        className={`text-4xl font-bold mb-8 transition transform cursor-pointer`}
       >
         {title}
       </h1>
-      <button className='button' onClick={() => setIsAddProject(true)}>
+      <button className="button" onClick={() => setIsAddProject(true)}>
         Add Project
       </button>
       <ReactModal
@@ -106,36 +138,11 @@ export default function Projects() {
       >
         <NewProjectForm setIsAddProject={setIsAddProject} />
       </ReactModal>
-      <div className='w-full max-w-4xl grid grid-cols-1 gap-8'>
-        {projects.map((project) => (
-          <div key={project.id} className='project-card'>
-            <h2 className='text-2xl font-semibold mb-2'>{project.name}</h2>
-
-            <p className='text-gray-600 mb-2'>
-              Start Date: {new Date(project.created_at).toLocaleDateString()}
-            </p>
-            <p className='text-gray-600 mb-2'>
-              End Date: {new Date(project.end_date).toLocaleDateString()}
-            </p>
-            <p className='text-gray-600 mb-2'>Goal: ${project.goal}</p>
-
-            <div className='w-full flex justify-center items-center mb-2'>
-              <div className='progress-bar'>
-                <div
-                  className='progress-bar-inner'
-                  style={{
-                    width: `${(project.progress / project.goal) * 100}%`,
-                  }}
-                ></div>
-              </div>
-            </div>
-            <p className='text-gray-600'>
-              Current Amount: {project.progress} (
-              {((project.progress / project.goal) * 100).toFixed(2)}%)
-            </p>
-          </div>
-        ))}
+      <div className="w-full max-w-4xl grid grid-cols-1 gap-8">
+        {projectList}
       </div>
     </main>
   );
-}
+};
+
+export default Projects;
