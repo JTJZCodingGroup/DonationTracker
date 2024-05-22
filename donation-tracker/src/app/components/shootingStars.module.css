@@ -1,20 +1,20 @@
 .star {
-    position: fixed;
-    width: 4px;
-    height: 2px;
-    background: white;
+  /* margin-top: 50px; */
+  position: fixed;
+  font-size: 40px;
+  color: green;
+  opacity: 0;
+  animation: shooting 5s linear forwards;
+  pointer-events: none;
+}
+
+@keyframes shooting {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
     opacity: 0;
-    animation: shooting 5s linear forwards;
+    transform: translateY(100vh);
   }
-  
-  @keyframes shooting {
-    0% {
-      opacity: 1;
-      transform: translateX(0) translateY(0);
-    }
-    100% {
-      opacity: 0;
-      transform: translateX(100vw) translateY(50vh);
-    }
-  }
-  
+}
