@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* body {
+  background-color: black;
+  color: white;
+} */
+
 /* Styles for the Projects component */
 
 body {
@@ -159,3 +164,4 @@ body {
   text-center
   mx-auto;
 }
+
