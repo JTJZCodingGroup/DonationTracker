@@ -3,6 +3,7 @@
 import { useState, useId } from "react";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
+import toast from "react-hot-toast";
 
 interface NewDonationFormProps {
   projectList: {
@@ -27,6 +28,11 @@ const NewDonationForm: React.FC<NewDonationFormProps> = ({ projectList }) => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
+    if (amount < 1) {
+      toast.error("Amount should be at least 1");
+      return;
+    }
+
     // create request body
     const body: NewDonationType = {
       amount,
@@ -48,6 +54,9 @@ const NewDonationForm: React.FC<NewDonationFormProps> = ({ projectList }) => {
     }
 
     await setAmount(0);
+
+    // Show success message
+    toast.success("Donation made successfully!");
 
     // revalidate project page path
     await fetch(`/api/revalidate?path=/projects/${projectId}`);
@@ -87,3 +96,4 @@ const NewDonationForm: React.FC<NewDonationFormProps> = ({ projectList }) => {
 };
 
 export default NewDonationForm;
+
