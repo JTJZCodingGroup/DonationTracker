@@ -19,7 +19,9 @@ export default async function Donation() {
 
   return (
     <main>
-      <h1>Create Donation Page</h1>
+      <div className="pageHeader">
+        <h1>DONATE</h1>
+      </div>
       <NewDonationForm projectList={projectList} />
     </main>
   );

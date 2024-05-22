@@ -94,9 +94,9 @@ const Project: React.FC<ProjectPageType> = async ({ params }) => {
 
   return (
     <main>
-      <div className="projectHeader">
+      <div className="pageHeader">
         <h1>{name}</h1>
-        <div className="projectHeader-goal">
+        <div className="pageHeader-goal">
           <p>
             <span>Goal: </span>
             {goal}
