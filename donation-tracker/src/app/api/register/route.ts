@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import { serialize } from 'cookie';
 
 const prisma = new PrismaClient();
 
@@ -23,5 +24,17 @@ export async function POST(req: Request) {
     },
   });
 
-  return NextResponse.json({ message: 'Registration successful', user });
+  // Generate a cookie
+  const cookie = serialize('token', user.id, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV !== 'development',
+    sameSite: 'strict',
+    maxAge: 60 * 60 * 24 * 7, // 1 week
+    path: '/',
+  });
+
+  const response = NextResponse.json({ message: 'Registration successful', user });
+  response.headers.append('Set-Cookie', cookie);
+
+  return response;
 }
