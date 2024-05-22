@@ -5,10 +5,12 @@ import Link from 'next/link';
 
 const Navbar: React.FC = () => {
   return (
-    <nav className="bg-black p-4">
+    <nav className="h-14 bg-black">
       <div className="container mx-auto flex flex-col lg:flex-row justify-between items-center">
-        <div className="text-white font-bold text-3xl mb-4 lg:mb-0 hover:text-orange-600 hover:cursor-pointer">
+        <div className="text-white font-mono font-bold text-3xl mb-4 lg:mb-0 hover:text-orange-600 hover:cursor-pointer">
+          <Link href="/">
           Donation Tracker
+          </Link>
         </div>
 
         <div className="lg:hidden">
@@ -26,13 +28,13 @@ const Navbar: React.FC = () => {
 
         <div className="lg:flex flex-col lg:flex-row lg:space-x-4 lg:mt-0 mt-4 flex flex-col items-center text-xl">
           <Link href="/projects">
-            <button className="text-white px-4 py-2 hover:text-orange-600 focus:outline-none">Projects</button>
+            <button className="text-white font-mono px-4 py-2 hover:text-orange-600 focus:outline-none">Projects</button>
           </Link>
           <Link href="/donate">
-            <button className="text-white px-4 py-2 hover:text-orange-600 focus:outline-none">Donate</button>
+            <button className="text-white font-mono px-4 py-2 hover:text-orange-600 focus:outline-none">Donate</button>
           </Link>
           <Link href="/login">
-            <button className="text-white px-4 py-2 hover:text-orange-600 focus:outline-none">Login</button>
+            <button className="text-white font-mono px-4 py-2 hover:text-orange-600 focus:outline-none">Login</button>
           </Link>
         </div>
       </div>
