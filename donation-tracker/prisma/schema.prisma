@@ -30,3 +30,10 @@ model Donations {
   amount     Int
   project    Projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
 }
+
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  password String
+  created_at DateTime @default(now())
+}
