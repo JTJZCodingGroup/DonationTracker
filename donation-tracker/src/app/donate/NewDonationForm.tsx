@@ -56,11 +56,11 @@ const NewDonationForm: React.FC<NewDonationFormProps> = ({ projectList }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h3>Add New Project</h3>
+    <form className="donationForm" onSubmit={handleSubmit}>
       <label>
-        <span>Project Name: </span>
+        <h3>Project Name: </h3>
         <Select
+          className="rounded-md shadow-sm"
           instanceId={selectId}
           options={projectList}
           defaultValue={projectList[0]}
@@ -71,8 +71,9 @@ const NewDonationForm: React.FC<NewDonationFormProps> = ({ projectList }) => {
         />
       </label>
       <label>
-        <span>Amount: </span>
+        <h3>Amount: </h3>
         <input
+          className="input-field"
           type="text"
           value={amount}
           onChange={(e) => {
@@ -81,7 +82,7 @@ const NewDonationForm: React.FC<NewDonationFormProps> = ({ projectList }) => {
           }}
         />
       </label>
-      <button>Submit</button>
+      <button className="submit-button">Submit</button>
     </form>
   );
 };

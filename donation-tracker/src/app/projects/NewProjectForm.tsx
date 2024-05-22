@@ -124,11 +124,11 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({ setIsAddProject }) => {
               required
             />
           </div>
-            <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center">
             <button type="submit" className="submit-button">
               Submit
             </button>
-            </div>
+          </div>
         </form>
       </div>
     </div>
