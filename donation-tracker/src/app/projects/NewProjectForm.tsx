@@ -1,10 +1,23 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import "../globals.css"; // Importing the global styles
+
+type Project = {
+  id: string;
+  created_at: string;
+  name: string;
+  goal: number;
+  progress: number;
+  end_date: string;
+  donations?: any[]; // Assuming donations are an array of donation objects
+};
 
 interface NewProjectFormProps {
   setIsAddProject: Function;
+  mutate: Function;
+  projects: Project[];
 }
 
 interface NewProjectType {
@@ -14,13 +27,19 @@ interface NewProjectType {
   progress: number;
 }
 
-const NewProjectForm: React.FC<NewProjectFormProps> = ({ setIsAddProject }) => {
+const NewProjectForm: React.FC<NewProjectFormProps> = ({
+  setIsAddProject,
+  mutate,
+  projects,
+}) => {
   const [name, setName] = useState<string>("");
   const [goal, setGoal] = useState<number>(0);
   const [date, setDate] = useState<string>("");
   const modalRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     // create request body
     const body: NewProjectType = {
       name,
@@ -48,8 +67,12 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({ setIsAddProject }) => {
     // revalidate project page path
     await fetch(`/api/revalidate?path=/donate`);
 
-    // close modal
+    // mutate swr withour revalidating by optimistically rendering UI
+    await mutate([...projects, projectData], false);
+
+    // close modal and refresh
     setIsAddProject(false);
+    router.refresh();
   };
 
   // Close the modal if clicking outside of it

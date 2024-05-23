@@ -1,5 +1,3 @@
-import Image from "next/image";
-import Navbar from './components/Navbar';
 import ShootingStars from "./components/shootingStars";
 
 export default function Home() {

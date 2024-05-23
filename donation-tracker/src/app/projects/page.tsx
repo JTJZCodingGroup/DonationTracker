@@ -1,21 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import ReactModal from "react-modal";
 import NewProjectForm from "./NewProjectForm";
 import Link from "next/link";
 import useSWR from "swr";
 import "../globals.css"; // Importing the global styles
-
-type Project = {
-  id: string;
-  created_at: string;
-  name: string;
-  goal: number;
-  progress: number;
-  end_date: string;
-  donations: any[]; // Assuming donations are an array of donation objects
-};
 
 const titles = [
   "DONATION-LEVELS OVER 9000!",
@@ -42,11 +32,15 @@ function shuffleArray(array: string[]) {
   return array.sort(() => Math.random() - 0.5);
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+// fetcher function for SWR
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  const data = await res.json();
+  return data;
+};
 
 const Projects = () => {
   const [isAddProject, setIsAddProject] = useState(false);
-  const [projects, setProjects] = useState<Project[]>([]);
   const [title, setTitle] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [shuffledTitles, setShuffledTitles] = useState<string[]>(
@@ -54,29 +48,15 @@ const Projects = () => {
   );
   const [fadeState, setFadeState] = useState<string>("fadeInRight");
   const [sortOption, setSortOption] = useState<string>("");
-  const [loading, setLoading] = useState(false);
-  const isFetched = useRef(false);
 
-  // const { data: user } = useSWR("/api/projects", fetcher);
-
-  const fetchProjects = async () => {
-    if (isFetched.current) return;
-    isFetched.current = true;
-    setLoading(true);
-    try {
-      const response = await fetch("/api/projects");
-      const data = await response.json();
-      setProjects(data);
-    } catch (error) {
-      console.error("Failed to fetch projects", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  // useSWR call to get projects on render
+  // call skipped if called mutate has revalidate = false
+  const {
+    data: projects,
+    error,
+    isLoading,
+    mutate,
+  } = useSWR("/api/projects", fetcher);
 
   //   useEffect(() => {
   //     const fetchProjects = async () => {
@@ -111,6 +91,7 @@ const Projects = () => {
     }, 1000); // Duration of fade-out animation
   };
 
+  // to sort projects, then mutates swr cache with new order
   const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSortOption(event.target.value);
     let sortedProjects = [...projects];
@@ -140,10 +121,22 @@ const Projects = () => {
       default:
         break;
     }
-    setProjects(sortedProjects);
+
+    // set cache to updated project order, without revalidating
+    mutate(sortedProjects, false);
   };
 
-  const projectList = projects.map((project) => (
+  // Handle loading state
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // Handle error state
+  if (error) {
+    return <div>Error loading projects</div>;
+  }
+
+  const projectList = projects.map((project: any) => (
     <Link href={`/projects/${project.id}`} key={project.id}>
       <div
         key={project.id}
@@ -177,10 +170,6 @@ const Projects = () => {
     </Link>
   ));
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <main className="min-h-screen flex flex-col items-center">
       <div className="pageHeader">
@@ -211,7 +200,11 @@ const Projects = () => {
         className="modal-content"
         overlayClassName="modal-overlay"
       >
-        <NewProjectForm setIsAddProject={setIsAddProject} />
+        <NewProjectForm
+          setIsAddProject={setIsAddProject}
+          mutate={mutate}
+          projects={projects}
+        />
       </ReactModal>
       <div className="w-full max-w-4xl grid grid-cols-1 gap-8">
         {projectList}
