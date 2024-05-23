@@ -20,7 +20,8 @@
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
     "react-modal": "^3.16.1",
-    "react-select": "^5.8.0"
+    "react-select": "^5.8.0",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

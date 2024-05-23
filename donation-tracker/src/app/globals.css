@@ -2,12 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Styles for the Projects component */
-
+/* General Styles */
 body {
   @apply bg-gray-50;
 }
 
+.pageHeader {
+  @apply flex-col
+  justify-center
+  text-center
+  p-6;
+}
+
+.pageHeader h1 {
+  @apply text-4xl
+  font-bold;
+}
+
+.input-field {
+  @apply mt-1 
+  p-2 
+  w-full 
+  border 
+  border-gray-300 
+  rounded-md 
+  shadow-sm 
+  focus:outline-none 
+  focus:ring-2 
+  focus:ring-blue-500;
+}
+
+.submit-button {
+  @apply mt-4 
+  p-2 
+  bg-blue-500 
+  text-white 
+  font-semibold 
+  rounded-md 
+  shadow-sm 
+  transition-colors 
+  duration-300 
+  hover:bg-blue-600 
+  focus:outline-none 
+  focus:ring-2 
+  focus:ring-blue-500;
+}
+
+/* Styles for the Projects component */
 .modal-overlay {
   @apply bg-black 
   bg-opacity-50 
@@ -82,55 +123,14 @@ body {
   max-w-sm;
 }
 
-.input-field {
-  @apply mt-1 
-  p-2 
-  w-full 
-  border 
-  border-gray-300 
-  rounded-md 
-  shadow-sm 
-  focus:outline-none 
-  focus:ring-2 
-  focus:ring-blue-500;
-}
-
-.submit-button {
-  @apply mt-4 
-  p-2 
-  bg-blue-500 
-  text-white 
-  font-semibold 
-  rounded-md 
-  shadow-sm 
-  transition-colors 
-  duration-300 
-  hover:bg-blue-600 
-  focus:outline-none 
-  focus:ring-2 
-  focus:ring-blue-500;
-}
-
 /* Styles for Project Page */
-.projectHeader {
-  @apply flex-col
-  justify-center
-  text-center
-  p-6;
-}
-
-.projectHeader h1 {
-  @apply text-4xl
-  font-bold;
-}
-
-.projectHeader-goal {
+.pageHeader-goal {
   @apply flex
   justify-center
   text-center;
 }
 
-.projectHeader-goal p {
+.pageHeader-goal p {
   @apply text-2xl
   text-gray-600;
 }
@@ -160,3 +160,17 @@ body {
   mx-auto;
 }
 
+/* Donation Page Styles */
+.donationForm {
+  @apply bg-white 
+  rounded-md 
+  p-8 
+  shadow-lg 
+  w-full 
+  max-w-sm
+  mx-auto;
+}
+
+.donationForm h3 {
+  @apply block text-sm font-medium text-gray-700 my-1;
+}

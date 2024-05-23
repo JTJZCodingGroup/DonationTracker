@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactModal from "react-modal";
 import NewProjectForm from "./NewProjectForm";
 import Link from "next/link";
+import useSWR from "swr";
 import "../globals.css"; // Importing the global styles
 
 type Project = {
@@ -34,12 +35,14 @@ const titles = [
   "Steal from your <Guild> Banks and Donate",
   "ALL YOUR ALMS ARE BELONG TO US",
   "Cancel your WoW subscription",
-  "Aggressively Giving since 2024"
+  "Aggressively Giving since 2024",
 ];
 
 function shuffleArray(array: string[]) {
   return array.sort(() => Math.random() - 0.5);
 }
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Projects = () => {
   const [isAddProject, setIsAddProject] = useState(false);
@@ -51,31 +54,52 @@ const Projects = () => {
   );
   const [fadeState, setFadeState] = useState<string>("fadeInRight");
   const [sortOption, setSortOption] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const isFetched = useRef(false);
+
+  // const { data: user } = useSWR("/api/projects", fetcher);
+
+  const fetchProjects = async () => {
+    if (isFetched.current) return;
+    isFetched.current = true;
+    setLoading(true);
+    try {
+      const response = await fetch("/api/projects");
+      const data = await response.json();
+      setProjects(data);
+    } catch (error) {
+      console.error("Failed to fetch projects", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await fetch("/api/projects");
-        const data = await response.json();
-        setProjects(data);
-      } catch (error) {
-        console.error("Failed to fetch projects", error);
-      }
-    };
     fetchProjects();
+  }, []);
 
-    // Set the initial title
-    setTitle(shuffledTitles[0]);
+  //   useEffect(() => {
+  //     const fetchProjects = async () => {
+  //       try {
+  //         const response = await fetch("/api/projects");
+  //         const data = await response.json();
+  //         setProjects(data);
+  //       } catch (error) {
+  //         console.error("Failed to fetch projects", error);
+  //       }
+  //     };
+  //     fetchProjects();
 
-  
+  //     // Set the initial title
+  //     setTitle(shuffledTitles[0]);
 
-    // Set an interval to change the title automatically
-    const interval = setInterval(() => {
-      handleChangeTitle();
-    }, 4000);
+  //     // Set an interval to change the title automatically
+  //     const interval = setInterval(() => {
+  //       handleChangeTitle();
+  //     }, 4000);
 
-    return () => clearInterval(interval);
-  }, [shuffledTitles]);
+  //     return () => clearInterval(interval);
+  //   }, [shuffledTitles]);
 
   const handleChangeTitle = () => {
     setFadeState("fadeOutLeft");
@@ -92,16 +116,26 @@ const Projects = () => {
     let sortedProjects = [...projects];
     switch (event.target.value) {
       case "percentageHighToLow":
-        sortedProjects.sort((a, b) => (b.progress / b.goal) - (a.progress / a.goal));
+        sortedProjects.sort(
+          (a, b) => b.progress / b.goal - a.progress / a.goal
+        );
         break;
       case "percentageLowToHigh":
-        sortedProjects.sort((a, b) => (a.progress / a.goal) - (b.progress / b.goal));
+        sortedProjects.sort(
+          (a, b) => a.progress / a.goal - b.progress / b.goal
+        );
         break;
       case "startDate":
-        sortedProjects.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        sortedProjects.sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
         break;
       case "endDate":
-        sortedProjects.sort((a, b) => new Date(a.end_date).getTime() - new Date(b.end_date).getTime());
+        sortedProjects.sort(
+          (a, b) =>
+            new Date(a.end_date).getTime() - new Date(b.end_date).getTime()
+        );
         break;
       default:
         break;
@@ -111,39 +145,49 @@ const Projects = () => {
 
   const projectList = projects.map((project) => (
     <Link href={`/projects/${project.id}`} key={project.id}>
-        <div key={project.id} className="project-card transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg">
-          <h2 className="text-2xl font-semibold mb-2">{project.name}</h2>
+      <div
+        key={project.id}
+        className="project-card transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
+      >
+        <h2 className="text-2xl font-semibold mb-2">{project.name}</h2>
 
-          <p className="text-gray-600 mb-2">
-            Start Date: {new Date(project.created_at).toLocaleDateString()}
-          </p>
-          <p className="text-gray-600 mb-2">
-            End Date: {new Date(project.end_date).toLocaleDateString()}
-          </p>
-          <p className="text-gray-600 mb-2">Goal: ${project.goal}</p>
+        <p className="text-gray-600 mb-2">
+          Start Date: {new Date(project.created_at).toLocaleDateString()}
+        </p>
+        <p className="text-gray-600 mb-2">
+          End Date: {new Date(project.end_date).toLocaleDateString()}
+        </p>
+        <p className="text-gray-600 mb-2">Goal: ${project.goal}</p>
 
-          <div className="w-full flex justify-center items-center mb-2">
-            <div className="progress-bar">
-              <div
-                className="progress-bar-inner"
-                style={{
-                  width: `${(project.progress / project.goal) * 100}%`,
-                }}
-              ></div>
-            </div>
+        <div className="w-full flex justify-center items-center mb-2">
+          <div className="progress-bar">
+            <div
+              className="progress-bar-inner"
+              style={{
+                width: `${(project.progress / project.goal) * 100}%`,
+              }}
+            ></div>
           </div>
-          <p className="text-gray-600">
-            Current Amount: {project.progress} (
-            {((project.progress / project.goal) * 100).toFixed(2)}%)
-          </p>
         </div>
+        <p className="text-gray-600">
+          Current Amount: {project.progress} (
+          {((project.progress / project.goal) * 100).toFixed(2)}%)
+        </p>
+      </div>
     </Link>
   ));
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <main className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
+    <main className="min-h-screen flex flex-col items-center">
+      <div className="pageHeader">
+        <h1>PROJECTS</h1>
+      </div>
       <h1
-        className={`title text-4xl font-bold mb-8 transition transform cursor-pointer`}
+        className={`title text-4xl font-bold transition transform cursor-pointer`}
       >
         {title}
       </h1>

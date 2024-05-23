@@ -1,4 +1,5 @@
 import NewDonationForm from "./NewDonationForm";
+import ShootingStars from '../components/shootingStars';
 
 const getProjects = async () => {
   const res = await fetch("http://localhost:3000/api/projects", {
@@ -18,9 +19,12 @@ export default async function Donation() {
   const projectList = await getProjects();
 
   return (
-    <main>
-      <h1>Create Donation Page</h1>
-      <NewDonationForm projectList={projectList} />
+    <main style={{ position: 'relative', overflow: 'hidden' }}> 
+      <div className="relative z-10">
+        <NewDonationForm projectList={projectList} />
+      </div>
+      <ShootingStars />
+
     </main>
   );
 }

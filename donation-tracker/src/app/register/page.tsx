@@ -1,10 +1,13 @@
 import RegisterForm from './RegisterForm';
+import ShootingStars from '../components/shootingStars';
 
 export default function RegisterPage() {
   return (
-    <main>
-      <h1>Register</h1>
-      <RegisterForm />
+    <main style={{ position: 'relative', overflow: 'hidden' }}>
+      <div className="relative z-10">
+        <RegisterForm />
+      </div>
+      <ShootingStars />
     </main>
   );
 }
