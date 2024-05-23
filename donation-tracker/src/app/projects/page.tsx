@@ -43,7 +43,6 @@ const Projects = () => {
   const [isAddProject, setIsAddProject] = useState(false);
   const [title, setTitle] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [projects, setProjects] = useState<any>([]);
   const [shuffledTitles, setShuffledTitles] = useState<string[]>(
     shuffleArray([...titles])
   );
@@ -51,15 +50,13 @@ const Projects = () => {
   const [sortOption, setSortOption] = useState<string>("");
 
   // useSWR call to get projects on render
-  // sets project state to retrieved data
-  // mutate is called after new project to revalidate this endpoint
+  // call skipped if called mutate has revalidate = false
   const {
-    data: data,
+    data: projects,
     error,
+    isLoading,
     mutate,
-  } = useSWR("/api/projects", fetcher, {
-    onSuccess: (data) => setProjects(data),
-  });
+  } = useSWR("/api/projects", fetcher);
 
   //   useEffect(() => {
   //     const fetchProjects = async () => {
@@ -94,7 +91,7 @@ const Projects = () => {
     }, 1000); // Duration of fade-out animation
   };
 
-  // to sort projects, sets a new state to re-render page
+  // to sort projects, then mutates swr cache with new order
   const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSortOption(event.target.value);
     let sortedProjects = [...projects];
@@ -124,12 +121,19 @@ const Projects = () => {
       default:
         break;
     }
-    setProjects(sortedProjects);
+
+    // set cache to updated project order, without revalidating
+    mutate(sortedProjects, false);
   };
 
-  // if projects from SWR is not retrieved yet, return loading page
-  if (projects.length === 0) {
-    return <div>Projects Loading...</div>;
+  // Handle loading state
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // Handle error state
+  if (error) {
+    return <div>Error loading projects</div>;
   }
 
   const projectList = projects.map((project: any) => (

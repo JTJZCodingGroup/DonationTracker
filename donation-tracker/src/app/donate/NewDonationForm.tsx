@@ -43,8 +43,6 @@ const NewDonationForm: React.FC<NewDonationFormProps> = ({ projectList }) => {
       return;
     }
 
-    await setAmount(0);
-
     await fetch(`/api/revalidate?path=/projects/${projectId}`);
     router.push("/projects/");
     router.refresh();
@@ -52,7 +50,10 @@ const NewDonationForm: React.FC<NewDonationFormProps> = ({ projectList }) => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-black-100">
-      <form onSubmit={handleSubmit} className="bg-white p-4 rounded-md shadow-md w-full max-w-sm">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-4 rounded-md shadow-md w-full max-w-sm"
+      >
         <h2 className="text-2xl font-bold mb-6 text-center">Donate</h2>
         <div className="mb-4">
           <label className="block text-gray-700 mb-2">
@@ -75,7 +76,8 @@ const NewDonationForm: React.FC<NewDonationFormProps> = ({ projectList }) => {
               type="text"
               value={amount}
               onChange={(e) => {
-                if (!isNaN(Number(e.target.value))) setAmount(Number(e.target.value));
+                if (!isNaN(Number(e.target.value)))
+                  setAmount(Number(e.target.value));
               }}
             />
           </label>

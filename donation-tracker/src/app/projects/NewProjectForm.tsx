@@ -67,19 +67,8 @@ const NewProjectForm: React.FC<NewProjectFormProps> = ({
     // revalidate project page path
     await fetch(`/api/revalidate?path=/donate`);
 
-    // mutate to have swr revalidate projects list
-    // to implement optimistic UI rendering
-
-    // const addOptions = (newProject: any, projects: any) => {
-    //   return {
-    //     optimisticData: [...projects, newProject, newProject],
-    //     rollbackOnError: true,
-    //     populateCache: true,
-    //     revalidate: false,
-    //   };
-    // };
-
-    await mutate();
+    // mutate swr withour revalidating by optimistically rendering UI
+    await mutate([...projects, projectData], false);
 
     // close modal and refresh
     setIsAddProject(false);
